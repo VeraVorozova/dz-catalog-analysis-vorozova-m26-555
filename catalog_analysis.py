@@ -168,7 +168,7 @@ def format_report_line(movie):
     sorted_genres = ", ".join(sorted(movie["genres"]))
 
     return (
-        f'"{norm_title}" ({movie["year"]}) {movie["rating"]}/10, '
+        f'"{norm_title}" ({movie["year"]}) — {movie["rating"]}/10, '
         f"{dus_str}, жанры: {sorted_genres}"
     )
 
@@ -182,7 +182,7 @@ def titles_sorted_by_rating(movies):
 def top_n_by_rating(movies, n=3):
     sorted_movies = sorted(movies, key=lambda m: m["rating"], reverse=True)
     return [
-        (normalize_title(m["title"]), m["rating"]) for m in sorted_movies[:n]
+        ((m["title"]), m["rating"]) for m in sorted_movies[:n]
     ]
 
 
@@ -248,6 +248,16 @@ def iter_high_rated(movies, min_rating=8.0):
             yield movie
 
 
+def demo_generators(movies):
+    
+    for movie in iter_high_rated(movies):
+        print(format_report_line(movie))
+    
+    # Генераторное выражение 
+    total_duration = sum(m["duration_min"] for m in movies if m["rating"] > 7)
+    print(total_duration)
+
+
 # Этап 9. Итоговый отчет
 def build_report(movies):
     print("ОТЧеТ ПО КАТАЛОГУ")
@@ -259,14 +269,7 @@ def build_report(movies):
     print("\nТоп-3 фильма:")
     top_3 = sorted(movies, key=lambda m: m["rating"], reverse=True)[:3]
     for movie in top_3:
-        norm_title = normalize_title(movie["title"])
-        dur = duration_in_hours(movie["duration_min"])
-        genres_str = ", ".join(sorted(movie["genres"]))
-
-        print(
-            f'  "{norm_title}" ({movie["year"]}) — {movie["rating"]}/10, '
-            f"{dur}, жанры: {genres_str}"
-        )
+        print(f"  {format_report_line(movie)}")
 
     print("\nФильмов по жанрам:")
     counts = count_by_genre(movies)
@@ -280,6 +283,3 @@ def build_report(movies):
 
 if __name__ == "__main__":
     build_report(movies)
-
-    # Этап 8, генераторное выражение
-    _ = sum(m["duration_min"] for m in movies if m["rating"] > 7)
